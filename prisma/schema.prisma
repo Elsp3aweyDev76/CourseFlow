@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// جدول المستخدمين (طلاب، محاضرين، مسؤولي النظام)
+model User {
+  id           String       @id @default(uuid())
+  name         String
+  email        String       @unique
+  password     String
+  role         Role         @default(STUDENT)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  courses      Course[]     @relation("InstructorCourses")
+  enrollments  Enrollment[]
+}
+
+enum Role {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+// جدول الدورات التدريبية
+model Course {
+  id           String       @id @default(uuid())
+  title        String
+  description  String?
+  price        Float        @default(0)
+  published    Boolean      @default(false)
+  imageBg      String?      // للتصميم (Gradient styles)
+  instructorId String
+  instructor   User         @relation("InstructorCourses", fields: [instructorId], references: [id])
+  lessons      Lesson[]
+  enrollments  Enrollment[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+// جدول الدروس (يدعم القفل التسلسلي وترتيب المحتوى)
+model Lesson {
+  id          String   @id @default(uuid())
+  title       String
+  content     String?  // <-- أضف هذا السطر هنا ليطابق ما تستخدمه في الصفحة
+  videoUrl    String?
+  order       Int      // ترتيب الدرس تسلسلياً
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+// جدول تسجيلات الطلاب في الدورات (لتتبع التقدم)
+model Enrollment {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress  Float    @default(0) // نسبة الإنجاز مئوية
+  createdAt DateTime @default(now())
+
+  @@unique([userId, courseId]) // الطالب يسجل في الدورة مرة واحدة فقط
+}
