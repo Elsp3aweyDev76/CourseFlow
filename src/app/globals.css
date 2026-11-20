@@ -1,26 +1,31 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-primary: #4f46e5;       /* Indigo 600 - الثقة والابتكار */
+    --color-primary-hover: #4338ca; /* Indigo 700 */
+    --color-secondary: #7c3aed;     /* Violet 600 - الإبداع */
+    --color-success: #059669;       /* Emerald 600 - النمو والإنجاز */
+    --color-accent: #f59e0b;        /* Amber 500 - التميز والتقييم */
+    --bg-surface: #f8fafc;          /* Slate 50 - خلفية مريحة للقراءة */
+  }
+
+  body {
+    background-color: var(--bg-surface);
+    color: #0f172a; /* Slate 900 */
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* تأثيرات تدرج لونية مخصصة للمنصة التعليمية */
+.edu-gradient-primary {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+}
+
+.edu-gradient-soft {
+  background: linear-gradient(180deg, rgba(238, 242, 255, 0.8) 0%, rgba(248, 250, 252, 0.2) 100%);
+}
+
+.edu-card-glow:hover {
+  box-shadow: 0 20px 40px -15px rgba(79, 70, 229, 0.12);
 }
