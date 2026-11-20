@@ -1,90 +1,96 @@
-"use client";
+// import Link from 'next/link';
+// import { cookies } from 'next/headers';
+// import { redirect } from 'next/navigation';
+// import { GraduationCap, LogOut, LayoutDashboard, Shield, BookOpen, Home } from 'lucide-react';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { BookOpen, GraduationCap, Shield, LogOut } from 'lucide-react';
-import { logoutAction } from '@/app/actions/auth';
+// // Server Action لتسجيل الخروج وحذف الكوكيز الخاصة بالمستخدم
+// async function logoutAction() {
+//     'use server';
+//     const cookieStore = await cookies();
+//     cookieStore.delete('courseflow_token');
+//     cookieStore.delete('userId');
+//     cookieStore.delete('courseflow_role');
+//     redirect('/login');
+// }
 
-interface NavbarProps {
-    initialToken: string | null;
-    initialRole: string | null;
-}
+// export default async function ServerNavbar() {
+//     const cookieStore = await cookies();
+//     const initialToken = cookieStore.get('courseflow_token')?.value || cookieStore.get('userId')?.value;
+//     const role = cookieStore.get('courseflow_role')?.value;
 
-export default function Navbar({ initialToken, initialRole }: NavbarProps) {
-    const pathname = usePathname();
+//     return (
+//         <header className="w-full bg-slate-950 border-b border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50 shadow-md" dir="rtl">
 
-    const handleLogout = async () => {
-        try {
-            // 1. حذف الكوكيز الآمنة من جهة السيرفر
-            await logoutAction();
-            // 2. إعادة توجيه فورية إلى الصفحة الرئيسية كزائر عادي مع مسح الذاكرة المؤقتة
-            window.location.href = '/';
-        } catch (error) {
-            console.error("Logout error:", error);
-        }
-    };
+//             {/* الشعار وروابط التنقل الأساسية */}
+//             <div className="flex items-center gap-8">
+//                 <Link href="/" className="flex items-center gap-2.5 group">
+//                     <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30 group-hover:bg-indigo-500 transition-all">
+//                         <GraduationCap className="w-6 h-6" />
+//                     </div>
+//                     <span className="font-black text-lg text-white tracking-wide">CourseFlow</span>
+//                 </Link>
 
-    // إخفاء الـ Navbar بالكامل في صفحة تسجيل الدخول، إنشاء الحساب، أو مشغل الدروس
-    if (pathname === '/login' || pathname === '/signup' || pathname?.includes('/lessons/')) {
-        return null;
-    }
+//                 <nav className="hidden md:flex items-center gap-6">
+//                     <Link
+//                         href="/"
+//                         className="text-sm font-bold text-slate-300 hover:text-indigo-400 transition-all flex items-center gap-1.5"
+//                     >
+//                         <Home className="w-4 h-4" />
+//                         الرئيسية
+//                     </Link>
 
-    return (
-        <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-50 shadow-sm" dir="rtl">
-            {/* الشعار */}
-            <div className="flex items-center gap-4">
-                <Link href="/" className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-md">
-                        CF
-                    </div>
-                    <span className="text-xl font-black text-slate-900">CourseFlow</span>
-                </Link>
-            </div>
+//                     <Link
+//                         href="/student/courses"
+//                         className="text-sm font-bold text-slate-300 hover:text-indigo-400 transition-all flex items-center gap-1.5"
+//                     >
+//                         <BookOpen className="w-4 h-4" />
+//                         تصفح الدورات
+//                     </Link>
 
-            {/* روابط التنقل الديناميكية */}
-            <nav className="hidden md:flex items-center gap-6 text-sm font-bold text-slate-600">
-                <Link href="/" className="hover:text-indigo-600 transition-all">الرئيسية</Link>
-                <Link href="/courses" className="hover:text-indigo-600 transition-all">تصفح الدورات</Link>
+//                     {initialToken && (
+//                         <Link
+//                             href="/student"
+//                             className="text-sm font-bold text-slate-300 hover:text-indigo-400 transition-all flex items-center gap-1.5"
+//                         >
+//                             <LayoutDashboard className="w-4 h-4" />
+//                             لوحة التحكم
+//                         </Link>
+//                     )}
 
-                {/* إظهار لوحة التحكم الخاصة بدور المستخدم المسجل فقط دون غيرها */}
-                {initialToken && initialRole === 'student' && (
-                    <Link href="/student" className="flex items-center gap-1.5 text-indigo-600 bg-indigo-50 px-3.5 py-2 rounded-xl transition-all">
-                        <GraduationCap className="w-4 h-4" />
-                        <span>لوحة الطالب</span>
-                    </Link>
-                )}
+//                     {role === 'admin' && (
+//                         <Link
+//                             href="/admin"
+//                             className="text-sm font-bold text-indigo-400 hover:text-indigo-300 transition-all flex items-center gap-1.5 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 rounded-xl"
+//                         >
+//                             <Shield className="w-4 h-4" />
+//                             لوحة المسؤول
+//                         </Link>
+//                     )}
+//                 </nav>
+//             </div>
 
-                {initialToken && initialRole === 'instructor' && (
-                    <Link href="/instructor" className="flex items-center gap-1.5 text-indigo-600 bg-indigo-50 px-3.5 py-2 rounded-xl transition-all">
-                        <BookOpen className="w-4 h-4" />
-                        <span>لوحة المحاضر</span>
-                    </Link>
-                )}
+//             {/* أزرار المصادقة (دخول للزوار / خروج للمسجلين) */}
+//             <div className="flex items-center gap-3">
+//                 {!initialToken ? (
+//                     <Link
+//                         href="/login"
+//                         className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 transition-all"
+//                     >
+//                         تسجيل الدخول
+//                     </Link>
+//                 ) : (
+//                     <form action={logoutAction}>
+//                         <button
+//                             type="submit"
+//                             className="flex items-center gap-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 font-bold px-4 py-2.5 rounded-xl transition-all text-sm cursor-pointer"
+//                         >
+//                             <LogOut className="w-4 h-4" />
+//                             <span>تسجيل الخروج</span>
+//                         </button>
+//                     </form>
+//                 )}
+//             </div>
 
-                {initialToken && initialRole === 'admin' && (
-                    <Link href="/admin" className="flex items-center gap-1.5 text-purple-600 bg-purple-50 px-3.5 py-2 rounded-xl transition-all">
-                        <Shield className="w-4 h-4" />
-                        <span>لوحة المسؤول</span>
-                    </Link>
-                )}
-            </nav>
-
-            {/* أزرار المصادقة (دخول للزوار / خروج للمسجلين) */}
-            <div className="flex items-center gap-3">
-                {!initialToken ? (
-                    <Link href="/login" className="px-5 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold text-sm transition-all">
-                        تسجيل الدخول
-                    </Link>
-                ) : (
-                    <button
-                        onClick={handleLogout}
-                        className="flex items-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold px-4 py-2.5 rounded-xl transition-all text-sm cursor-pointer"
-                    >
-                        <LogOut className="w-4 h-4" />
-                        <span>تسجيل الخروج</span>
-                    </button>
-                )}
-            </div>
-        </header>
-    );
-}
+//         </header>
+//     );
+// }
